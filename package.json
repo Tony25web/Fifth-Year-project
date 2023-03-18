@@ -1,0 +1,21 @@
+{
+  "name": "real-estate-management-system",
+  "version": "1.0.0",
+  "description": "an Api for a Real Estate management System to faciltate the process of trading any permanant structures like home,land ,Etc.",
+  "main": "app.js",
+  "scripts": {
+    "test": "vitest --run --reporter verbose",
+    "test:watch": "vitest"
+  },
+  "author": "Tony Bustaty",
+  "license": "ISC",
+  "dependencies": {
+    "async-handler": "^0.0.3",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.9.1"
+  }
+}
