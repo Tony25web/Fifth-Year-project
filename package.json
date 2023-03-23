@@ -5,17 +5,24 @@
   "main": "app.js",
   "scripts": {
     "test": "vitest --run --reporter verbose",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "start": "nodemon app.js"
   },
   "author": "Tony Bustaty",
   "license": "ISC",
   "dependencies": {
-    "async-handler": "^0.0.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^6.9.1"
+    "mongoose": "^6.9.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.1",
+    "nodemon": "^2.0.21",
+    "slugify": "^1.6.5",
+    "uuid": "^9.0.0"
   }
 }

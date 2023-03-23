@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const UserSchema = new mongoose.Schema(
   {
     fullName: { type: String, trim: true },
@@ -15,10 +15,10 @@ const UserSchema = new mongoose.Schema(
     passwordResetCode: Number,
     passwordResetIsVerified: Boolean,
     passwordResetCodeExpirationTime: String,
-    phone_number: { type: String, trim: true },
+    phoneNumber: { type: String, trim: true },
     role: {
       type: String,
-      enum: ["admin", "user", "officeManager"],
+      enum: ["admin", "user"],
       default: "user",
     },
     favorites: [
@@ -27,25 +27,30 @@ const UserSchema = new mongoose.Schema(
         ref: "Property",
       },
     ],
-    addresses: [
-      {
-        alias: String,
-        details: String,
-        phone: Number,
-        city: String,
-        postalCode: Number,
-      },
-    ],
-    isLicensed: Boolean,
-    isAgency: Boolean,
     profileImage: String,
+    Agency: [{ type: mongoose.Schema.Types.ObjectId, ref: "Agency" }],
   },
   { timestamps: true }
 );
-UserSchema.methods.generateJWT = function () {
+UserSchema.methods.generateJWT = function (next) {
   return jwt.sign({ user_id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRY_DATE,
   });
 };
-
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  const encryptedPassword = await bcrypt.hash(this.password, 12);
+  this.password = encryptedPassword;
+  next();
+});
 module.exports = mongoose.model("User", UserSchema);
+/* the first solution for the login problem */
+
+// field1: { $exists: true, $ne: "" },
+//     field2: { $exists: true, $ne: null },
+//     field3: { $exists: true, $ne: false },
+
+/* the second solution for the login problem */
+// field1: { $not: { $in: ["", null, false] } },
+// field2: { $not: { $in: ["", null, false] } },
+// field3: { $not: { $in: ["", null, false] } },

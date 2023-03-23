@@ -1,19 +1,70 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt=require("jsonwebtoken")
 const AgencySchema = new mongoose.Schema({
   agencyName: {
     type: String,
+    required: [true, "the agency must be provided"],
   },
-  Email: { type: String, trim: true },
-  password: { type: String, trim: true },
-  agencyPhoneNumber: { type: String },
+  Email: {
+    type: String,
+    trim: true,
+    required: [true, "email must be provided"],
+  },
+  password: {
+    type: String,
+    trim: true,
+    required: [true, "password must be provided"],
+  },
+  PasswordChangedAt: Date,
+  passwordResetCode: Number,
+  passwordResetIsVerified: Boolean,
+  passwordResetCodeExpirationTime: String,
+  agencyPhoneNumber: {
+    type: String,
+    required: [true, "phone number must be provided"],
+  },
+  role: {
+    type: String,
+    required: [
+      true,
+      "you must be an office manager to signUp as an office manager",
+    ],
+    enum: ["officeManager"],
+  },
   location: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      default: "Point",
-    },
-    coordinates: [Number],
+      type: {
+        type: String, // Don't do `{ location: { type: String } }`
+        enum: ['Point'], // 'location.type' must be 'Point'
+        required: true,
+        default:"Point"
+      },
+      coordinates: {
+        type: [Number],
+        required: true
+      }
   },
-  agency_License: { type: Number, default: 0 },
+  agency_License: {
+    type: Number,
+    required: [
+      true,
+      "you must provide a license to prove that you are an office manager",
+    ],
+  },
+  properties: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Property",
+  },]
 });
+AgencySchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  const encryptedPassword = await bcrypt.hash(this.password, 12);
+  this.password = encryptedPassword;
+  next();
+});
+AgencySchema.methods.generateJWT = function (next) {
+  return jwt.sign({ user_id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRY_DATE,
+  });
+};
 module.exports = mongoose.model("Agency", AgencySchema);
