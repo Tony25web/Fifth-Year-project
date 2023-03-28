@@ -28,7 +28,6 @@ const UserSchema = new mongoose.Schema(
       },
     ],
     profileImage: String,
-    Agency: [{ type: mongoose.Schema.Types.ObjectId, ref: "Agency" }],
   },
   { timestamps: true }
 );

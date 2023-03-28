@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const jwt=require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const AgencySchema = new mongoose.Schema({
   agencyName: {
     type: String,
@@ -32,17 +32,25 @@ const AgencySchema = new mongoose.Schema({
     ],
     enum: ["officeManager"],
   },
-  location: {
-      type: {
-        type: String, // Don't do `{ location: { type: String } }`
-        enum: ['Point'], // 'location.type' must be 'Point'
-        required: true,
-        default:"Point"
-      },
-      coordinates: {
-        type: [Number],
-        required: true
-      }
+  locationOnMap: {
+    type: {
+      type: String, // Don't do `{ location: { type: String } }`
+      enum: ["Point"], // 'location.type' must be 'Point'
+      required: true,
+      default: "Point",
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+    location: {
+      type: String,
+      required: [
+        true,
+        "there must be a location for the property you want to add",
+      ],
+      trim: true,
+    },
   },
   agency_License: {
     type: Number,
@@ -51,10 +59,16 @@ const AgencySchema = new mongoose.Schema({
       "you must provide a license to prove that you are an office manager",
     ],
   },
-  properties: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Property",
-  },]
+  properties: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Property",
+    },
+  ],
+  isAgency: {
+    type: Boolean,
+    default: false,
+  },
 });
 AgencySchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

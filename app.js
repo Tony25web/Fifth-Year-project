@@ -2,17 +2,28 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const express = require("express");
 const app = express();
+const { Server } = require("socket.io");
+const { errorHandler } = require("./utils/errorHandler");
 const morgan = require("morgan");
 const { connect } = require("./config/connectDataBase");
 const PORT = process.env.PORT || 5000;
 const authRoute = require("./routes/Auth");
+const propertyRoute = require("./routes/Property");
+const AdminRouter = require("./routes/Admin");
 app.use(bodyParser.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.use("/api/v1", authRoute);
+app.use("/api/v1/user/property", propertyRoute);
+app.use("/api/v1/admin", AdminRouter);
+app.use(errorHandler);
 const server = app.listen(PORT, console.log(`listening to port ${PORT}`));
 connect(process.env.MONGO_URI);
+const io = new Server(server);
+io.on("connection", (socket) => {
+  console.log("a user is connected");
+});
 /* we are going to use the events in nodejs 
   to handle errors that can't be handled by express
   */
