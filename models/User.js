@@ -42,6 +42,19 @@ UserSchema.pre("save", async function (next) {
   this.password = encryptedPassword;
   next();
 });
+
+function setTheImageUrl(doc) {
+  if (doc.profileImage) {
+    const imageUrl = `${process.env.BASE_URL}/user/profile/${doc.profileImage}`;
+    doc.profileImage = imageUrl;
+  }
+}
+UserSchema.post("init", function (doc) {
+  setTheImageUrl(doc);
+});
+UserSchema.post("save", function (doc) {
+  setTheImageUrl(doc);
+});
 module.exports = mongoose.model("User", UserSchema);
 /* the first solution for the login problem */
 

@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require("path");
 const bodyParser = require("body-parser");
 const express = require("express");
 const app = express();
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+app.use(express.static(path.join(__dirname,"uploads")))
 app.use("/api/v1", authRoute);
 app.use("/api/v1/user/property", propertyRoute);
 app.use("/api/v1/admin", AdminRouter);
@@ -23,6 +25,7 @@ connect(process.env.MONGO_URI);
 const io = new Server(server);
 io.on("connection", (socket) => {
   console.log("a user is connected");
+  console.log(socket);
 });
 /* we are going to use the events in nodejs 
   to handle errors that can't be handled by express
