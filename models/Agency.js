@@ -7,7 +7,7 @@ const AgencySchema = new mongoose.Schema(
       type: String,
       required: [true, "the agency must be provided"],
     },
-    Email: {
+    email: {
       type: String,
       trim: true,
       required: [true, "email must be provided"],
@@ -21,28 +21,22 @@ const AgencySchema = new mongoose.Schema(
     passwordResetCode: Number,
     passwordResetIsVerified: Boolean,
     passwordResetCodeExpirationTime: String,
-    agencyPhoneNumber: {
+    phoneNumber: {
       type: String,
       required: [true, "phone number must be provided"],
     },
     role: {
       type: String,
-      required: [
-        true,
-        "you must be an office manager to signUp as an office manager",
-      ],
-      enum: ["officeManager"],
+      default: "officeManager",
     },
     locationOnMap: {
       type: {
         type: String, // Don't do `{ location: { type: String } }`
         enum: ["Point"], // 'location.type' must be 'Point'
-        required: true,
         default: "Point",
       },
       coordinates: {
         type: [Number],
-        required: true,
       },
     },
     location: {
@@ -76,7 +70,7 @@ const AgencySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-AgencySchema.index({locationOnMap:"2dsphere"})
+AgencySchema.index({ locationOnMap: "2dsphere" });
 AgencySchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const encryptedPassword = await bcrypt.hash(this.password, 12);

@@ -11,13 +11,17 @@ const PORT = process.env.PORT || 5000;
 const authRoute = require("./routes/Auth");
 const propertyRoute = require("./routes/Property");
 const AdminRouter = require("./routes/Admin");
+const userRoute = require("./routes/User");
+const agencyRoute = require("./routes/Agency");
 app.use(bodyParser.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-app.use(express.static(path.join(__dirname,"uploads")))
+app.use(express.static(path.join(__dirname, "uploads")));
 app.use("/api/v1", authRoute);
-app.use("/api/v1/user/property", propertyRoute);
+app.use("/api/v1/users", userRoute);
+app.use("/api/v1/agency", agencyRoute);
+app.use("/api/v1/property", propertyRoute);
 app.use("/api/v1/admin", AdminRouter);
 app.use(errorHandler);
 const server = app.listen(PORT, console.log(`listening to port ${PORT}`));

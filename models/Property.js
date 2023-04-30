@@ -80,6 +80,14 @@ const propertySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    agency: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Agency",
+    },
+    isAccepted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
@@ -104,6 +112,7 @@ propertySchema.post("init", function (doc) {
 propertySchema.post("save", function (doc) {
   setTheImageUrl(doc);
 });
+module.exports = mongoose.model("Property", propertySchema);
 // propertySchema.pre("save", async function (next) {
 //   this.property_Number = this.property_Number + generateRandomNumbers();
 //   next();
@@ -111,4 +120,3 @@ propertySchema.post("save", function (doc) {
 // function generateRandomNumbers() {
 //   return Math.floor(1000000 + Math.random() * 9000000);
 // }
-module.exports = mongoose.model("Property", propertySchema);

@@ -64,6 +64,7 @@ const addProperty = asyncHandler(async (req, res, next) => {
     propertyNumber: req.body.propertyNumber,
     property_image: req.body.property_image,
     property_images: req.body.property_images,
+    agency: req.body.agency,
   });
   if (!property) {
     throw new APIError("we couldn't add your property try again", 500);
@@ -82,10 +83,12 @@ const getAProperty = asyncHandler(async (req, res, next) => {
   res.status(200).json({ prop: property });
 });
 const getAllProperties = asyncHandler(async (req, res, next) => {
-  console.log(req.query);
   const documentCounts = await Property.countDocuments();
-  const apiFeatures = new ApiFeatures(Property.find(), req.query)
-    // .pagination(documentCounts)
+  const apiFeatures = new ApiFeatures(
+    Property.find({ isAccepted: true }),
+    req.query
+  )
+    .pagination(documentCounts)
     .search("Property")
     .sort()
     .limitFields();
@@ -136,7 +139,17 @@ const deleteProperty = asyncHandler(async (req, res, next) => {
 //     req.query = queryString.replace(/&/g, " ");
 //     next();
 //   });
-
+const updatePropertyStatus = asyncHandler(async (req, res, next) => {
+  const property = await Property.findOneAndUpdate(
+    { _id: req.body.propertyId },
+    { $set: { isAccepted: true } },
+    { new: true }
+  );
+  if (!property) {
+    throw new APIError("there is no property with id " + req.body.propertyId);
+  }
+  res.status(200).json({ status: "success" });
+});
 module.exports = {
   resizePropertyImages,
   uploadPropertyImages,
@@ -145,4 +158,5 @@ module.exports = {
   getAllProperties,
   updateProperty,
   deleteProperty,
+  updatePropertyStatus,
 };

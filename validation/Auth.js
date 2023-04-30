@@ -66,14 +66,13 @@ const AgencySignUpValidation = [
     .withMessage("the agency must have a name please provide a one")
     .isLength({ min: 3 })
     .withMessage("the agency name must be at least 3 characters"),
-  body("agencyLicense")
+  body("agency_License")
     .notEmpty()
     .withMessage("any agency must have a license"),
   body("location")
     .notEmpty()
     .withMessage("the location must be provided")
-    .isString()
-    .withMessage("the location must of type String"),
+,
   body("locationOnMap").optional(),
   validator,
 ];
