@@ -28,9 +28,11 @@ const resetPasswordForAgency = authFactory.verifyPasswordResetCode(Agency);
 
 const AuthorizedTo = (...roles) =>
   asyncHandler(async (req, res, next) => {
+    console.log(roles);
     if (!roles.includes(req.user.role)) {
+      console.log(roles);
       throw new APIError("you are not allowed to access this route", 403);
-    };
+    }
     next();
   });
 

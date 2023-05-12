@@ -27,13 +27,9 @@ const getUsers = asyncHandler(async (req, res, next) => {
   });
 });
 const updateUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findOneAndUpdate(
-    { _id: req.params.userId },
-    req.body,
-    {
-      new: true,
-    }
-  );
+  const user = await User.findOneAndUpdate({ _id: req.params.id }, req.body, {
+    new: true,
+  });
   if (!user) {
     throw new APIError(
       "there is a problem with updating the user or the user is not found",
@@ -43,13 +39,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({ user: user, status: "success" });
 });
 const deleteUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findOneAndRemove(
-    { _id: req.params.userId },
-    req.body,
-    {
-      new: true,
-    }
-  );
+  const user = await User.findOneAndRemove({ _id: req.params.id });
   if (!user) {
     throw new APIError("couldn't delete the user", 500);
   }
@@ -57,8 +47,8 @@ const deleteUser = asyncHandler(async (req, res, next) => {
 });
 const addFavorite = asyncHandler(async (req, res, next) => {
   const userUpdate = await User.findOneAndUpdate(
-    { _id: req.user.userId },
-    { $addToSet: { favorites: [req.body.favorite] } },
+    { _id: req.user._id },
+    { $addToSet: { favorites: req.body.propertyId } },
     { new: true }
   );
   if (!userUpdate) {
@@ -73,8 +63,8 @@ const addFavorite = asyncHandler(async (req, res, next) => {
 });
 const getAllFavorites = asyncHandler(async (req, res, next) => {
   const favorites = await User.find(
-    { _id: req.user.userId },
-    { favorites: 1, id: 0 }
+    { _id: req.user._id },
+    { favorites: 1, _id: 0 }
   );
   if (!favorites) {
     throw new APIError(
@@ -84,12 +74,12 @@ const getAllFavorites = asyncHandler(async (req, res, next) => {
       404
     );
   }
-  res.status(200).json({ status: "success", Favorites: favorites });
+  res.status(200).json({ status: "success", Fav: favorites[0] });
 });
 const deleteFavorite = asyncHandler(async (req, res, next) => {
   const deletedFavorite = await User.findOneAndUpdate(
-    { _id: req.user.userId },
-    { $pull: { favorites: req.body.favorite } },
+    { _id: req.user._id },
+    { $pull: { favorites: { $in: [req.params.id] } } },
     { new: true }
   );
   if (!deletedFavorite) {
