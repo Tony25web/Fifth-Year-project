@@ -18,6 +18,10 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.use(express.static(path.join(__dirname, "uploads")));
+app.get("/", (req, res, next) => {
+  res.send("this api is working well");
+  next();
+});
 app.use("/api/v1", authRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/agency", agencyRoute);
@@ -46,4 +50,3 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
-  
