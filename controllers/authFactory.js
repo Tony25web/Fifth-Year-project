@@ -8,7 +8,7 @@ const { sendEmail } = require("../utils/sendEmail");
 
 exports.login = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
-    const document = await Model.findOne({ Email: req.body.email });
+    const document = await Model.findOne({ email: req.body.email });
     if (!document) {
       throw new APIError(
         "there is no user with the given credentials please check your information and try again",
