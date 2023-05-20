@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    Email: { type: String, trim: true },
+    email: { type: String, trim: true },
     password: { type: String, trim: true },
     PasswordChangedAt: Date,
     passwordResetCode: Number,

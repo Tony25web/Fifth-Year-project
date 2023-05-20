@@ -2,6 +2,8 @@ require("dotenv").config();
 const path = require("path");
 const bodyParser = require("body-parser");
 const express = require("express");
+const cors = require("cors");
+const compression = require("compression");
 const app = express();
 const { Server } = require("socket.io");
 const { errorHandler } = require("./utils/errorHandler");
@@ -22,6 +24,11 @@ app.get("/", (req, res, next) => {
   res.send("this api is working well");
   next();
 });
+// Cross Origin Resource Sharing configuration
+app.use(cors());
+//compress all response
+app.use(compression());
+app.options("*", cors());
 app.use("/api/v1", authRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/agency", agencyRoute);
