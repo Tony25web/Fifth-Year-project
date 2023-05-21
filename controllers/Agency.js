@@ -54,7 +54,7 @@ const removeProperty = asyncHandler(async (req, res, next) => {
   console.log(req.body.properties);
   const removedProperty = await Agency.findOneAndUpdate(
     { _id: req.user._id },
-    { $pull: { properties:{$in:[...req.body.properties]} } },
+    { $pull: { properties: { $in: [...req.body.properties] } } },
     { new: true }
   );
   if (!removedProperty) {
@@ -83,15 +83,15 @@ const addProperty = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({ Agency: updateAgency, status: "success" });
 });
-const modifyPropertiesToOjectId = asyncHandler(async (req, res, next) => {
-  let newPropertiesId = [];
-  const { properties } = req.body.properties;
-  properties.map((property) => {
-    newPropertiesId.push(mongoose.Types.ObjectId(property));
-  });
-  req.body.properties = newPropertiesId;
-  next();
-});
+// const modifyPropertiesToOjectId = asyncHandler(async (req, res, next) => {
+//   let newPropertiesId = [];
+//   const { properties } = req.body.properties;
+//   properties.map((property) => {
+//     newPropertiesId.push(mongoose.Types.ObjectId(property));
+//   });
+//   req.body.properties = newPropertiesId;
+//   next();
+// });
 module.exports = {
   getAgency,
   updateAgency,
