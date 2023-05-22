@@ -27,14 +27,14 @@ router
   .route("/:id")
   .patch(
     auth.verifyJWT,
-    auth.AuthorizedTo(["officeManager", "admin"]),
+    auth.AuthorizedTo("officeManager", "admin"),
     updateProperty
   );
 router
   .route("/:id")
   .delete(
     auth.verifyJWT,
-    auth.AuthorizedTo(["officeManager", "admin"]),
+    auth.AuthorizedTo("officeManager", "admin"),
     deleteProperty
   );
 module.exports = router;
