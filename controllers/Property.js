@@ -115,15 +115,11 @@ const updateProperty = asyncHandler(async (req, res, next) => {
   res.status(200).json({ prop: property });
 });
 const deleteProperty = asyncHandler(async (req, res, next) => {
-  const property = await Property.findOneAndDelete(
-    { _id: req.params.id },
-    req.body,
-    { new: true }
-  );
+  const property = await Property.findOneAndDelete({ _id: req.params.id });
   if (!property) {
     throw new APIError("there is no property with id " + req.params.id, 404);
   }
-  res.status(200).json({ prop: property });
+  res.status(200).json({ message: "success" });
 });
 // const resolveToURI = (object) =>
 //   asyncHandler(async (req, res, next) => {
