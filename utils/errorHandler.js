@@ -3,13 +3,13 @@ const errorHandler = (error, req, res, next) => {
   error.statusCode = error.statusCode || 500;
   error.status = error.status || "error";
   if (process.env.NODE_ENV == "development") {
-    return sendErrorForDev(error, res);
+     sendErrorForDev(error, res);
   } else {
     if (error.name === "JsonWebTokenError")
       error = JWTErrorHandler("JsonWebTokenError");
     if (error.name === "TokenExpiredError")
       error = JWTErrorHandler("TokenExpiredError");
-    return sendErrorForProduction(error, res);
+     sendErrorForProduction(error, res);
   }
 };
 const JWTErrorHandler = (name) => {
@@ -20,7 +20,7 @@ const JWTErrorHandler = (name) => {
   }
 };
 const sendErrorForDev = (error, res) => {
-  return res.status(error.statusCode).json({
+   res.status(error.statusCode).json({
     status: error.status,
     message: error.message,
     error: error,
@@ -28,7 +28,7 @@ const sendErrorForDev = (error, res) => {
   });
 };
 const sendErrorForProduction = (error, res) => {
-  return res.status(error.statusCode).json({
+   res.status(error.statusCode).json({
     status: error.status,
     message: error.message,
   });
