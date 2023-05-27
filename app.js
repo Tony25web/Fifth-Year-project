@@ -20,10 +20,6 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.use(express.static(path.join(__dirname, "uploads")));
-app.get("/", (req, res, next) => {
-  res.send("this api is working well");
-  next();
-});
 // Cross Origin Resource Sharing configuration
 app.use(cors());
 //compress all response
