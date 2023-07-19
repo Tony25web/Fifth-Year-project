@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
-const connect =  (URL)=>{
+const connect = (URL) => {
   return mongoose
-    .connect(URL)
+    .connect(URL, { family: 4 })
     .then(() => {
       return console.log("Connected to Database");
     })
@@ -11,4 +11,4 @@ const connect =  (URL)=>{
       process.exit(1);
     });
 };
-module.exports={connect}
+module.exports = { connect };

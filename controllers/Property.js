@@ -17,9 +17,10 @@ const uploadPropertyImages = uploadMultipleImages([
 ]);
 const resizePropertyImages = asyncHandler(async (req, res, next) => {
   if (req.files.property_image) {
-    const fileNameForCoverImage = `property-${req.body.realEstateArea}-${
-      req.body.propertyNumber
-    }-${Date.now()}.jpeg`;
+    const fileNameForCoverImage = `property-${req.body.estateArea.replace(
+      " ",
+      "-"
+    )}-${req.body.propertyNumber}-${Date.now()}.jpeg`;
     await sharp(req.files.property_image[0].buffer)
       .resize(600, 600)
       .toFormat("jpeg")
@@ -31,7 +32,7 @@ const resizePropertyImages = asyncHandler(async (req, res, next) => {
     req.body.property_images = [];
     await Promise.all(
       req.files.property_images.map(async (img, index) => {
-        const imageName = `property-${req.body.EstateArea}-${
+        const imageName = `property-${req.body.estateArea.replace(" ", "-")}-${
           req.body.propertyNumber
         }-${Date.now()}-${index + 1}.jpeg`;
 
@@ -83,15 +84,15 @@ const getAProperty = asyncHandler(async (req, res, next) => {
   res.status(200).json({ prop: property });
 });
 const getAllProperties = asyncHandler(async (req, res, next) => {
-  const documentCounts = await Property.countDocuments();
+  const documentCounts = await Property.countDocuments({ isAccepted: true });
   const apiFeatures = new ApiFeatures(
     Property.find({ isAccepted: true }),
     req.query
-  )
+    ).search("Property") 
     .pagination(documentCounts)
-    .search("Property")
     .sort()
-    .limitFields();
+    .limitFields()
+    ;
   const { MongooseQuery, PaginationResult } = apiFeatures;
   const properties = await MongooseQuery;
   if (!properties) {

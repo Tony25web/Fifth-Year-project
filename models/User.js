@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, trim: true },
     password: { type: String, trim: true },
     PasswordChangedAt: Date,
-    passwordResetCode: Number,
+    passwordResetCode: String,
     passwordResetIsVerified: Boolean,
     passwordResetCodeExpirationTime: String,
     phoneNumber: { type: String, trim: true },
@@ -28,6 +28,7 @@ const UserSchema = new mongoose.Schema(
       },
     ],
     profileImage: String,
+    address: [{ type: String }],
   },
   { timestamps: true }
 );
@@ -45,7 +46,7 @@ UserSchema.pre("save", async function (next) {
 
 function setTheImageUrl(doc) {
   if (doc.profileImage) {
-    const imageUrl = `${process.env.BASE_URL}/user/profile/${doc.profileImage}`;
+    const imageUrl = `${process.env.BASE_URL}/users/${doc.profileImage}`;
     doc.profileImage = imageUrl;
   }
 }
@@ -56,13 +57,3 @@ UserSchema.post("save", function (doc) {
   setTheImageUrl(doc);
 });
 module.exports = mongoose.model("User", UserSchema);
-/* the first solution for the login problem */
-
-// field1: { $exists: true, $ne: "" },
-//     field2: { $exists: true, $ne: null },
-//     field3: { $exists: true, $ne: false },
-
-/* the second solution for the login problem */
-// field1: { $not: { $in: ["", null, false] } },
-// field2: { $not: { $in: ["", null, false] } },
-// field3: { $not: { $in: ["", null, false] } },

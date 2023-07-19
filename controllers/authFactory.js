@@ -63,12 +63,12 @@ exports.forgetPassword = (Model) =>
     enter this code to complete the reset <hr />
     thank you for helping us in keeping your account safe <hr />
     <span>;copy</span><hr />
-    <h2>ZamZam Application</h2>
+    <h2>realtor Application</h2>
   </body>
     <html /> `;
     try {
       await sendEmail({
-        email: document.Email,
+        email: document.email,
         subject: "your password reset code is valid for (1 hour)",
         content: message,
       });
@@ -140,5 +140,8 @@ exports.signUp = (Model, ModelName) =>
       );
     }
     const token = document.generateJWT();
-    res.status(201).json({ data: document, Token: token });
+    res.json({ [ModelName]: document, Token: token });
+    // await document.save();
+    // req.userAuth = { data: document, Token: token };
+    // next();
   });

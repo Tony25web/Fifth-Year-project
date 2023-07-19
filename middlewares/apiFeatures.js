@@ -7,11 +7,13 @@ class ApiFeatures {
     if (this.RequestQuery.sort) {
       let sortQuery = this.RequestQuery.sort.split(",").join(" ");
       this.MongooseQuery = this.MongooseQuery.sort(sortQuery);
+      console.log(sortQuery, typeof sortQuery === "string");
     } else {
-      this.MongooseQuery = this.MongooseQuery.sort({ createdAt: -1 });
+      this.MongooseQuery = this.MongooseQuery.sort("-createdAt");
     }
     return this;
   }
+
   limitFields() {
     if (this.RequestQuery.fields) {
       let fields = this.RequestQuery.fields.split(",").join(" ");
@@ -21,33 +23,36 @@ class ApiFeatures {
     }
     return this;
   }
+
   search(ModelName) {
     let query = {};
-    if (Object.keys(this.RequestQuery).length > 0) {
+    let arrayOfFields = ['roomNumber','lesserPrice','greaterPrice','lesserArea','greaterArea','location','isItForRental','type'];
+    if (Object.keys(this.RequestQuery).toString() in arrayOfFields) {
       if (ModelName === "Property") {
         query.$or = [
           {
-            ...this.searchByLocationAndRoomNum(
+            ...searchByLocationAndRoomNum(
               this.RequestQuery.roomNumber,
               this.RequestQuery.location
             ),
           },
           {
-            area: this.searchForArea(
+            area:searchForArea(
               this.RequestQuery.lesserArea,
               this.RequestQuery.greaterArea
             ),
           },
           {
-            ...this.searchForEverything(this.RequestQuery),
+            ...searchForEverything(this.RequestQuery),
           },
           {
-            price: this.searchForPrice(
+            price:searchForPrice(
               this.RequestQuery.lesserPrice,
               this.RequestQuery.greaterPrice
             ),
           },
-           {...this.searchByType(this.RequestQuery.isItForRental) },
+          { ...searchByStatus(this.RequestQuery.isItForRental) },
+          { ...searchByType(this.RequestQuery.type) },
         ];
       } else {
         query.$or = [
@@ -91,7 +96,7 @@ class ApiFeatures {
 
   pagination(countDocuments) {
     const page = +this.RequestQuery.page || 1;
-    const productLimit = +this.RequestQuery.limit || 6;
+    const productLimit = +this.RequestQuery.limit || 10;
     const skip = (page - 1) * productLimit;
     const endIndex = page * productLimit;
     /* the index of the last product in a page ex 
@@ -110,100 +115,110 @@ class ApiFeatures {
     this.MongooseQuery = this.MongooseQuery.skip(skip).limit(productLimit);
     return this;
   }
-  searchForArea(lessArea = undefined, greatArea = undefined) {
-    if (lessArea !== undefined && greatArea !== undefined) {
-      return {
-        $gte: lessArea,
-        $lt: greatArea,
-      };
-    } else if (greatArea !== undefined) {
-      return {
-        $lte: greatArea,
-      };
-    } else if (lessArea !== undefined) {
-      return {
-        $gte: lessArea,
-      };
-    } else {
-      return;
-    }
-  }
-  searchForPrice(lessPrice = undefined, greatPrice = undefined) {
-    if (lessPrice !== undefined && greatPrice !== undefined) {
-      return {
-        $gte: lessPrice,
-        $lt: greatPrice,
-      };
-    } else if (greatPrice !== undefined) {
-      return {
-        $lte: greatPrice,
-      };
-    } else if (lessPrice !== undefined) {
-      return {
-        $gte: lessPrice,
-      };
-    } else {
-      return;
-    }
-  }
-  searchForEverything(queryObject) {
-    const {
-      roomNumber,
-      lesserPrice,
-      greaterPrice,
-      location,
-      lesserArea,
-      greaterArea,
-      isItForRental,
-    } = queryObject;
-    if (
-      roomNumber !== undefined &&
-      lesserPrice !== undefined &&
-      greaterPrice !== undefined &&
-      lesserArea !== undefined &&
-      greaterArea !== undefined &&
-      location !== undefined &&
-      isItForRental !== undefined
-    ) {
-      return {
-        location: {
-          $regex: location,
-          $options: "gi",
-        },
-        price: { $gt: lesserPrice, $lt: greaterPrice },
-        area: { $gt: lesserArea, $lt: greaterArea },
-        room_number: roomNumber,
-        isItForRental: isItForRental,
-      };
-    } else {
-      return {};
-    }
-  }
-  searchByLocationAndRoomNum(room_number, location) {
-    if (room_number !== undefined && location !== undefined) {
-      return {
-        location: { $regex: location, $options: "ig" },
-        room_number: room_number,
-      };
-    }
-    if (room_number !== undefined) {
-      return {
-        room_number: room_number,
-      };
-    }
-    if (location !== undefined) {
-      return {
-        location: { $regex: location, $options: "ig" },
-      };
-    }
+
+  
+}
+
+function searchForPrice(lessPrice = undefined, greatPrice = undefined) {
+  if (lessPrice !== undefined && greatPrice !== undefined) {
+    return {
+      $gte: lessPrice,
+      $lt: greatPrice,
+    };
+  } else if (greatPrice !== undefined) {
+    return {
+      $lte: greatPrice,
+    };
+  } else if (lessPrice !== undefined) {
+    return {
+      $gte: lessPrice,
+    };
+  } else {
     return;
   }
-  searchByType(isRental) {
-    if(isRental===undefined) {
-      return {};
-    } 
-      return { isItForRental: isRental };
-    
+}
+function searchForEverything(queryObject) {
+  const {
+    roomNumber,
+    lesserPrice,
+    greaterPrice,
+    location,
+    lesserArea,
+    greaterArea,
+    isItForRental,
+  } = queryObject;
+  if (
+    roomNumber !== undefined &&
+    lesserPrice !== undefined &&
+    greaterPrice !== undefined &&
+    lesserArea !== undefined &&
+    greaterArea !== undefined &&
+    location !== undefined &&
+    isItForRental !== undefined
+  ) {
+    return {
+      location: {
+        $regex: location,
+        $options: "gi",
+      },
+      price: { $gt: lesserPrice, $lt: greaterPrice },
+      area: { $gt: lesserArea, $lt: greaterArea },
+      room_number: roomNumber,
+      isItForRental: isItForRental,
+    };
+  } else {
+    return {};
+  }
+}
+function searchByLocationAndRoomNum(room_number, location) {
+  if (room_number !== undefined && location !== undefined) {
+    return {
+      location: { $regex: location, $options: "ig" },
+      room_number: room_number,
+    };
+  }
+  if (room_number !== undefined) {
+    return {
+      room_number: room_number,
+    };
+  }
+  if (location !== undefined) {
+    return {
+      location: { $regex: location, $options: "ig" },
+    };
+  }
+  return;
+}
+function searchByStatus(isRental) {
+  if (isRental === undefined) {
+    return {};
+  }
+  return { isItForRental: isRental };
+}
+function searchByType(Type) {
+  if (Type === undefined) {
+    return {};
+  }
+  return { typeOfProperty: { $regex: Type, $options: "i" } };
+}
+
+
+function searchForArea(lessArea = undefined, greatArea = undefined) {
+  if (lessArea !== undefined && greatArea !== undefined) {
+    return {
+      $gte: lessArea,
+      $lt: greatArea,
+    };
+  } else if (greatArea !== undefined) {
+    return {
+      $lte: greatArea,
+    };
+  } else if (lessArea !== undefined) {
+    return {
+      $gte: lessArea,
+    };
+  } else {
+    return;
   }
 }
 module.exports = { ApiFeatures };

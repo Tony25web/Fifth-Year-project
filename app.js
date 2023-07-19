@@ -3,6 +3,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
 const compression = require("compression");
 const app = express();
 const { Server } = require("socket.io");
@@ -22,13 +23,14 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.static(path.join(__dirname, "uploads")));
 // Cross Origin Resource Sharing configuration
 app.use(cors());
+app.use(helmet());
 //compress all response
 app.use(compression());
 app.options("*", cors());
 app.use("/api/v1", authRoute);
+app.use("/api/v1/property", propertyRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/agency", agencyRoute);
-app.use("/api/v1/property", propertyRoute);
 app.use("/api/v1/admin", AdminRouter);
 app.use(errorHandler);
 const server = app.listen(PORT, console.log(`listening to port ${PORT}`));

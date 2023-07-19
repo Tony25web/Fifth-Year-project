@@ -18,7 +18,7 @@ const AgencySchema = new mongoose.Schema(
       required: [true, "password must be provided"],
     },
     PasswordChangedAt: Date,
-    passwordResetCode: Number,
+    passwordResetCode: String,
     passwordResetIsVerified: Boolean,
     passwordResetCodeExpirationTime: String,
     phoneNumber: {
@@ -37,6 +37,7 @@ const AgencySchema = new mongoose.Schema(
       },
       coordinates: {
         type: [Number],
+        default: [0, 0],
       },
     },
     location: {
@@ -84,10 +85,14 @@ AgencySchema.methods.generateJWT = function (next) {
 };
 function setTheImageUrl(doc) {
   if (doc.profileImage) {
-    const imageUrl = `${process.env.BASE_URL}/user/profile/${doc.profileImage}`;
+    const imageUrl = `${process.env.BASE_URL}/agencies/${doc.profileImage}`;
     doc.profileImage = imageUrl;
   }
 }
+AgencySchema.pre(/^find/, function (next) {
+  this.populate({ path: "properties" });
+  next();
+});
 AgencySchema.post("init", function (doc) {
   setTheImageUrl(doc);
 });

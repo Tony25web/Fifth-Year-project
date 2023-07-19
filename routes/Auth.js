@@ -13,6 +13,9 @@ const {
   forgetPasswordForUser,
   forgetPasswordForAgency,
 } = require("../controllers/auth");
+
+// const {  AuthorizePusher } = require("../controllers/notification");
+
 router
   .route("/user/signup")
   .post(AuthValidator.UserSignUpValidation, signUpForUser);

@@ -106,6 +106,16 @@ function setTheImageUrl(doc) {
     doc.property_images = img;
   }
 }
+propertySchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "user_id",
+    select: "fullName -_id phoneNumber profileImage",
+  }).populate({
+    path: "agency",
+    select: "agencyName agency_image -properties -_id",
+  });
+  next();
+});
 propertySchema.post("init", function (doc) {
   setTheImageUrl(doc);
 });
@@ -113,10 +123,3 @@ propertySchema.post("save", function (doc) {
   setTheImageUrl(doc);
 });
 module.exports = mongoose.model("Property", propertySchema);
-// propertySchema.pre("save", async function (next) {
-//   this.property_Number = this.property_Number + generateRandomNumbers();
-//   next();
-// });
-// function generateRandomNumbers() {
-//   return Math.floor(1000000 + Math.random() * 9000000);
-// }

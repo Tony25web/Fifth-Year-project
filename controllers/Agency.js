@@ -3,6 +3,25 @@ const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 const { APIError } = require("../Errors/APIError");
 const { ApiFeatures } = require("../middlewares/apiFeatures");
+const { uploadSingleImage } = require("../middlewares/uploadImages");
+const sharp = require("sharp");
+const { v4: uuidv4 } = require("uuid");
+const uploadAgencyImage = uploadSingleImage("agency_image");
+const resizeAgencyImage = asyncHandler(async (req, res, next) => {
+  if (req.file) {
+    const fileNameForCoverImage = `user-${
+      req.user.agencyName
+    }-${uuidv4()}-${Date.now()}.jpeg`;
+    await sharp(req.file.buffer)
+      .resize(600, 600)
+      .toFormat("jpeg")
+      .jpeg({ quality: 90 })
+      .toFile(`uploads/agencies/${fileNameForCoverImage}`);
+    req.body.profileImage = fileNameForCoverImage;
+  }
+  next();
+});
+
 const getAgency = asyncHandler(async (req, res, next) => {
   const agency = await Agency.findById(req.params.id);
   if (!agency) {
@@ -70,7 +89,7 @@ const addProperty = asyncHandler(async (req, res, next) => {
     { _id: req.user._id },
     {
       $addToSet: {
-        properties: mongoose.Types.ObjectId(req.body.properties),
+        properties: mongoose.Types.ObjectId(req.body.property),
       },
     },
     { new: true }
@@ -92,6 +111,13 @@ const modifyPropertiesToOjectId = asyncHandler(async (req, res, next) => {
   req.body.properties = newPropertiesId;
   next();
 });
+const getAgencyProperties=asyncHandler(async (req, res, next) => {
+ const agency=await Agency.findOne({_id:req.user._id},{_id:0,properties:1});
+ if(!agency){
+  throw new APIError(`No properties found For The Agency`,404)
+ }
+res.json({agency:agency});
+})
 module.exports = {
   getAgency,
   updateAgency,
@@ -100,4 +126,7 @@ module.exports = {
   removeProperty,
   addProperty,
   modifyPropertiesToOjectId,
+  uploadAgencyImage,
+  resizeAgencyImage,
+  getAgencyProperties
 };
