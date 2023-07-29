@@ -23,26 +23,12 @@ class ApiFeatures {
     return this;
   }
 
-  search(ModelName) {
+  search(ModelName) { 
     let query = {};
-    let filter = true;
-    let arrayOfFields = [
-      "roomNumber",
-      "lesserPrice",
-      "greaterPrice",
-      "lesserArea",
-      "greaterArea",
-      "location",
-      "isItForRental",
-      "type",
-    ];
-    Object.keys(this.RequestQuery).forEach((element) => {
-      if (!arrayOfFields.includes(element)) {
-        filter = false;
-      }
-      filter = true;
-    });
-    if (filter) {
+    console.log(checkForSearchParameters(this.RequestQuery))
+    console.log(this.RequestQuery)
+    if (checkForSearchParameters(this.RequestQuery) && Object.keys(this.RequestQuery).length!==0) {
+      console.log("inside if ")
       if (ModelName === "Property") {
         query.$or = [
           {
@@ -102,9 +88,12 @@ class ApiFeatures {
           },
         ];
       }
-    } else {
-      query = {};
     }
+    else{
+      console.log("inside else ")
+      query={};
+    }
+    console.log(query)
     this.MongooseQuery = this.MongooseQuery.find(query);
     return this;
   }
@@ -232,6 +221,27 @@ function searchForArea(lessArea = undefined, greatArea = undefined) {
   } else {
     return;
   }
+}
+
+function checkForSearchParameters(RequestQuery){
+  let filter = true;
+  let arrayOfFields = [
+    "roomNumber",
+    "lesserPrice",
+    "greaterPrice",
+    "lesserArea",
+    "greaterArea",
+    "location",
+    "isItForRental",
+    "type",
+  ];
+  Object.keys(RequestQuery).forEach((element) => {
+    if (!arrayOfFields.includes(element)) {
+      filter = false;
+    }
+    filter = true;
+  });
+  return filter;
 }
 module.exports = { ApiFeatures };
 
