@@ -23,9 +23,12 @@ class ApiFeatures {
     return this;
   }
 
-  search(ModelName) { 
+  search(ModelName) {
     let query = {};
-    if (checkForSearchParameters(this.RequestQuery) && Object.keys(this.RequestQuery).length!==0) {
+    if (
+      checkForSearchParameters(this.RequestQuery) &&
+      Object.keys(this.RequestQuery).length !== 0
+    ) {
       if (ModelName === "Property") {
         query.$or = [
           {
@@ -59,7 +62,7 @@ class ApiFeatures {
               {
                 location: {
                   $regex: this.RequestQuery.location,
-                  $options: "gi",
+                  $options: "i",
                 },
               },
               { price: { $lte: this.RequestQuery.lesserPrice } },
@@ -85,12 +88,11 @@ class ApiFeatures {
           },
         ];
       }
+    } else {
+      console.log("inside else ");
+      query = {};
     }
-    else{
-      console.log("inside else ")
-      query={};
-    }
-    console.log(query)
+    console.log(query);
     this.MongooseQuery = this.MongooseQuery.find(query);
     return this;
   }
@@ -172,7 +174,7 @@ function searchForEverything(queryObject) {
 function searchByLocationAndRoomNum(room_number, location) {
   if (room_number !== undefined && location !== undefined) {
     return {
-      location: { $regex: location, $options: "ig" },
+      location: { $regex: location, $options: "i" },
       room_number: room_number,
     };
   }
@@ -220,7 +222,7 @@ function searchForArea(lessArea = undefined, greatArea = undefined) {
   }
 }
 
-function checkForSearchParameters(RequestQuery){
+function checkForSearchParameters(RequestQuery) {
   let filter = false;
   let arrayOfFields = [
     "roomNumber",
@@ -235,13 +237,11 @@ function checkForSearchParameters(RequestQuery){
   Object.keys(RequestQuery).forEach((element) => {
     if (arrayOfFields.includes(element)) {
       filter = true;
-    }
-    else{
-
+    } else {
       filter = false;
     }
   });
-  console.log(filter)
+  console.log(filter);
   return filter;
 }
 module.exports = { ApiFeatures };
