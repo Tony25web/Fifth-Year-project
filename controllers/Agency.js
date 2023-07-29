@@ -1,4 +1,5 @@
 const Agency = require("../models/Agency");
+const Property = require("../models/Property");
 const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 const { APIError } = require("../Errors/APIError");
@@ -99,6 +100,14 @@ const addProperty = asyncHandler(async (req, res, next) => {
       "couldn't update the agency's properties due to an error either the property isn't found or something else",
       404
     );
+  }
+  const property = await Property.findOneAndUpdate(
+    { _id: req.body.property },
+    { $set: { isAccepted: true } },
+    { new: true }
+  );
+  if (!property) {
+    throw new APIError("there is no property with id " + req.body.propertyId);
   }
   res.status(200).json({ Agency: updateAgency, status: "success" });
 });

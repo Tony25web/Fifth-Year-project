@@ -14,13 +14,14 @@ const {
   getAgencyProperties,
 } = require("../controllers/Agency");
 
+
 router
   .route("/addProperty")
   .patch(
     auth.verifyJWT,
     AgencyValidator.AddProperty,
     auth.AuthorizedTo("officeManager"),
-    addProperty
+    addProperty,
   );
 router
   .route("/removeProperty")

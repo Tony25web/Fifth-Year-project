@@ -28,6 +28,8 @@ router
   .patch(
     auth.verifyJWT,
     auth.AuthorizedTo("officeManager", "admin"),
+    resizePropertyImages,
+    uploadPropertyImages,
     updateProperty
   );
 router
