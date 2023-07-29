@@ -7,7 +7,6 @@ class ApiFeatures {
     if (this.RequestQuery.sort) {
       let sortQuery = this.RequestQuery.sort.split(",").join(" ");
       this.MongooseQuery = this.MongooseQuery.sort(sortQuery);
-      console.log(sortQuery, typeof sortQuery === "string");
     } else {
       this.MongooseQuery = this.MongooseQuery.sort("-createdAt");
     }
@@ -26,8 +25,24 @@ class ApiFeatures {
 
   search(ModelName) {
     let query = {};
-    let arrayOfFields = ['roomNumber','lesserPrice','greaterPrice','lesserArea','greaterArea','location','isItForRental','type'];
-    if (Object.keys(this.RequestQuery).toString() in arrayOfFields) {
+    let filter = true;
+    let arrayOfFields = [
+      "roomNumber",
+      "lesserPrice",
+      "greaterPrice",
+      "lesserArea",
+      "greaterArea",
+      "location",
+      "isItForRental",
+      "type",
+    ];
+    Object.keys(this.RequestQuery).forEach((element) => {
+      if (!arrayOfFields.includes(element)) {
+        filter = false;
+      }
+      filter = true;
+    });
+    if (filter) {
       if (ModelName === "Property") {
         query.$or = [
           {
@@ -37,7 +52,7 @@ class ApiFeatures {
             ),
           },
           {
-            area:searchForArea(
+            area: searchForArea(
               this.RequestQuery.lesserArea,
               this.RequestQuery.greaterArea
             ),
@@ -46,7 +61,7 @@ class ApiFeatures {
             ...searchForEverything(this.RequestQuery),
           },
           {
-            price:searchForPrice(
+            price: searchForPrice(
               this.RequestQuery.lesserPrice,
               this.RequestQuery.greaterPrice
             ),
@@ -115,8 +130,6 @@ class ApiFeatures {
     this.MongooseQuery = this.MongooseQuery.skip(skip).limit(productLimit);
     return this;
   }
-
-  
 }
 
 function searchForPrice(lessPrice = undefined, greatPrice = undefined) {
@@ -201,7 +214,6 @@ function searchByType(Type) {
   }
   return { typeOfProperty: { $regex: Type, $options: "i" } };
 }
-
 
 function searchForArea(lessArea = undefined, greatArea = undefined) {
   if (lessArea !== undefined && greatArea !== undefined) {
