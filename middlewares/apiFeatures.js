@@ -185,7 +185,7 @@ function searchByLocationAndRoomNum(room_number, location) {
   }
   if (location !== undefined) {
     return {
-      location: { $regex: location, $options: "ig" },
+      location: { $regex: location, $options: "i" },
     };
   }
   return;
