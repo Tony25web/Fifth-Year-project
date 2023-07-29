@@ -25,10 +25,7 @@ class ApiFeatures {
 
   search(ModelName) { 
     let query = {};
-    console.log(checkForSearchParameters(this.RequestQuery))
-    console.log(this.RequestQuery)
     if (checkForSearchParameters(this.RequestQuery) && Object.keys(this.RequestQuery).length!==0) {
-      console.log("inside if ")
       if (ModelName === "Property") {
         query.$or = [
           {
@@ -224,7 +221,7 @@ function searchForArea(lessArea = undefined, greatArea = undefined) {
 }
 
 function checkForSearchParameters(RequestQuery){
-  let filter = true;
+  let filter = false;
   let arrayOfFields = [
     "roomNumber",
     "lesserPrice",
@@ -236,11 +233,15 @@ function checkForSearchParameters(RequestQuery){
     "type",
   ];
   Object.keys(RequestQuery).forEach((element) => {
-    if (!arrayOfFields.includes(element)) {
+    if (arrayOfFields.includes(element)) {
+      filter = true;
+    }
+    else{
+
       filter = false;
     }
-    filter = true;
   });
+  console.log(filter)
   return filter;
 }
 module.exports = { ApiFeatures };
