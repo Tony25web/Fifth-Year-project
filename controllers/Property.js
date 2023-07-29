@@ -17,7 +17,7 @@ const uploadPropertyImages = uploadMultipleImages([
 ]);
 const resizePropertyImages = asyncHandler(async (req, res, next) => {
   if (req.files.property_image) {
-    const fileNameForCoverImage = `property-${uuidv4}-${Date.now()}.jpeg`;
+    const fileNameForCoverImage = `property-${uuidv4()}-${Date.now()}.jpeg`;
     await sharp(req.files.property_image[0].buffer)
       .resize(600, 600)
       .toFormat("jpeg")
