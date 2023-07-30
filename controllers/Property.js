@@ -4,7 +4,7 @@ const { APIError } = require("../Errors/APIError");
 const { ApiFeatures } = require("../middlewares/apiFeatures");
 const { uploadMultipleImages } = require("../middlewares/uploadImages");
 const sharp = require("sharp");
-const {v4:uuidv4}=require("uuid")
+const { v4: uuidv4 } = require("uuid");
 const uploadPropertyImages = uploadMultipleImages([
   {
     name: "property_image",
@@ -29,9 +29,9 @@ const resizePropertyImages = asyncHandler(async (req, res, next) => {
     req.body.property_images = [];
     await Promise.all(
       req.files.property_images.map(async (img, index) => {
-        const imageName = `property-${req.body.estateArea.replace(" ", "-")}-${
-          req.body.propertyNumber
-        }-${Date.now()}-${index + 1}.jpeg`;
+        const imageName = `property-${uuidv4()}-${Date.now()}-${
+          index + 1
+        }.jpeg`;
 
         await sharp(img.buffer)
           .resize(600, 600)
@@ -85,11 +85,11 @@ const getAllProperties = asyncHandler(async (req, res, next) => {
   const apiFeatures = new ApiFeatures(
     Property.find({ isAccepted: true }),
     req.query
-    ).search("Property") 
+  )
+    .search("Property")
     .pagination(documentCounts)
     .sort()
-    .limitFields()
-    ;
+    .limitFields();
   const { MongooseQuery, PaginationResult } = apiFeatures;
   const properties = await MongooseQuery;
   if (!properties) {
