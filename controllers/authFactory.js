@@ -25,12 +25,12 @@ exports.login = (Model, modelName) =>
     const token = document.generateJWT();
     res.status(200).json({ [modelName]: document, Token: token });
   });
-exports.forgetPassword = (Model) =>
+exports.forgetPassword = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.findOne({ email: req.body.email });
     if (!document) {
       throw new APIError(
-        "there is no user with the provided email try again with a valid email",
+        `there is no ${modelName} with the provided email try again with a valid email`,
         404
       );
     }
@@ -89,7 +89,7 @@ exports.forgetPassword = (Model) =>
       message: "reset code is sent to the user email",
     });
   });
-exports.verifyPasswordResetCode = (Model) =>
+exports.verifyPasswordResetCode = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
     // 1) get user based on reset code
     const hashedResetCode = crypto
@@ -110,12 +110,15 @@ exports.verifyPasswordResetCode = (Model) =>
     await document.save();
     res.status(200).json({ status: "success" });
   });
-exports.resetPassword = (Model) =>
+exports.resetPassword = (Model, modelName) =>
   asyncHandler(async (req, res, next) => {
     //1) get user based on his email
     const document = await Model.findOne({ email: req.body.email });
     if (!document) {
-      throw new APIError("there is no such email address try again", 404);
+      throw new APIError(
+        `there is no ${modelName} with the provided email try again with a valid email`,
+        404
+      );
     }
     //2) check the reset code is verified
     if (!document.passwordResetIsVerified) {

@@ -14,22 +14,27 @@ const loginForUser = authFactory.login(User, "User");
 
 const loginForAgency = authFactory.login(Agency, "Agency");
 
-const forgetPasswordForUser = authFactory.forgetPassword(User);
+const forgetPasswordForUser = authFactory.forgetPassword(User,"User");
 
-const forgetPasswordForAgency = authFactory.forgetPassword(Agency);
+const forgetPasswordForAgency = authFactory.forgetPassword(Agency,"Agency");
 
-const verifyResetCodeForUser = authFactory.verifyPasswordResetCode(User);
+const verifyResetCodeForUser = authFactory.verifyPasswordResetCode(User,"User");
 
-const verifyResetCodeForAgency = authFactory.verifyPasswordResetCode(Agency);
+const verifyResetCodeForAgency = authFactory.verifyPasswordResetCode(Agency,"Agency");
 
-const resetPasswordForUser = authFactory.resetPassword(User);
+const resetPasswordForUser = authFactory.resetPassword(User,"User");
 
-const resetPasswordForAgency = authFactory.resetPassword(Agency);
+const resetPasswordForAgency = authFactory.resetPassword(Agency,"Agency");
 
 const AuthorizedTo = (...roles) =>
   asyncHandler(async (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       throw new APIError("you are not allowed to access this route", 403);
+    } else if (!req.user.role) {
+      throw new APIError(
+        "you are  not logged in to the system please login and try again",
+        401
+      );
     }
     next();
   });

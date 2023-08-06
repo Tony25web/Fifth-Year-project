@@ -34,7 +34,7 @@ app.use("/api/v1/agency", agencyRoute);
 app.use("/api/v1/admin", AdminRouter);
 app.use(errorHandler);
 const server = app.listen(PORT, console.log(`listening to port ${PORT}`));
-connect(process.env.MONGO_URI);
+connect(process.env.MONGO_URI_REMOTE);
 const io = new Server(server);
 io.on("connection", (socket) => {
   console.log("a user is connected");

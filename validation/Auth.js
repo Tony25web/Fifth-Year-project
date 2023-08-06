@@ -25,7 +25,7 @@ const UserSignUpValidation = [
     .notEmpty()
     .withMessage("User's email is required")
     .custom(async (value, { req }) => {
-      const user = await User.findOne({ Email: value });
+      const user = await User.findOne({ email: value });
       if (user) {
         return Promise.reject(
           new Error(`this email address already exist try another email`)
@@ -50,7 +50,15 @@ const AgencySignUpValidation = [
     .withMessage("you should insert a valid email")
     .notEmpty()
     .withMessage("User's email is required")
-    .normalizeEmail(),
+    .normalizeEmail()
+    .custom(async (value, { req }) => {
+      const user = await User.findOne({ email: value });
+      if (user) {
+        return Promise.reject(
+          new Error(`this email address already exist try another email`)
+        );
+      }
+    }),
   body("password")
     .notEmpty()
     .withMessage("User's password is required")
@@ -69,10 +77,7 @@ const AgencySignUpValidation = [
   body("agency_License")
     .notEmpty()
     .withMessage("any agency must have a license"),
-  body("location")
-    .notEmpty()
-    .withMessage("the location must be provided")
-,
+  body("location").notEmpty().withMessage("the location must be provided"),
   body("locationOnMap").optional(),
   validator,
 ];
