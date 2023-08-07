@@ -61,7 +61,6 @@ const propertySchema = new mongoose.Schema(
     },
     realEstateArea: {
       type: String,
-      unique: true,
       required: [
         true,
         "there must be a real estate area for the property you want to add",

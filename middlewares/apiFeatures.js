@@ -24,12 +24,14 @@ class ApiFeatures {
   }
 
   search(ModelName) {
+    console.log("inside search")
     let query = {};
     if (
       checkForSearchParameters(this.RequestQuery) &&
       Object.keys(this.RequestQuery).length !== 0
     ) {
       if (ModelName === "Property") {
+        console.log("inside search 1")
         query.$or = [
           {
             ...searchByLocationAndRoomNum(
