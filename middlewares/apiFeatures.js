@@ -24,20 +24,23 @@ class ApiFeatures {
   }
 
   search(ModelName) {
-    console.log("inside search")
+    console.log("inside search");
     let query = {};
     if (
       checkForSearchParameters(this.RequestQuery) &&
       Object.keys(this.RequestQuery).length !== 0
     ) {
       if (ModelName === "Property") {
-        console.log("inside search 1")
+        console.log("inside search 1");
         query.$or = [
           {
             ...searchByLocationAndRoomNum(
               this.RequestQuery.roomNumber,
               this.RequestQuery.location
             ),
+          },
+          {
+            ...searchByPropertyNumber(this.RequestQuery.propertyNumber),
           },
           {
             area: searchForArea(
@@ -224,6 +227,13 @@ function searchForArea(lessArea = undefined, greatArea = undefined) {
   }
 }
 
+function searchByPropertyNumber(propertynumber) {
+  if (propertynumber === undefined) {
+    return {};
+  }
+  return { propertyNumber: propertynumber };
+}
+
 function checkForSearchParameters(RequestQuery) {
   let filter = false;
   let arrayOfFields = [
@@ -235,6 +245,7 @@ function checkForSearchParameters(RequestQuery) {
     "location",
     "isItForRental",
     "type",
+    "propertyNumber",
   ];
   Object.keys(RequestQuery).forEach((element) => {
     if (arrayOfFields.includes(element)) {

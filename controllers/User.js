@@ -89,7 +89,7 @@ const getAllFavorites = asyncHandler(async (req, res, next) => {
   const favorites = await User.find(
     { _id: req.user._id },
     { favorites: 1, _id: 0 }
-  );
+  ).populate("favorites");
   if (!favorites) {
     throw new APIError(
       "there is no user with id " +
@@ -98,7 +98,7 @@ const getAllFavorites = asyncHandler(async (req, res, next) => {
       404
     );
   }
-  res.status(200).json({ status: "success", Fav: favorites[0] });
+  res.status(200).json({ status: "success", Fav: favorites });
 });
 const deleteFavorite = asyncHandler(async (req, res, next) => {
   const deletedFavorite = await User.findOneAndUpdate(
