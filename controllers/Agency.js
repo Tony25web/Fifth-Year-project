@@ -120,13 +120,16 @@ const modifyPropertiesToOjectId = asyncHandler(async (req, res, next) => {
   req.body.properties = newPropertiesId;
   next();
 });
-const getAgencyProperties=asyncHandler(async (req, res, next) => {
- const agency=await Agency.findOne({_id:req.user._id},{_id:0,properties:1});
- if(!agency){
-  throw new APIError(`No properties found For The Agency`,404)
- }
-res.json({agency:agency});
-})
+const getAgencyProperties = asyncHandler(async (req, res, next) => {
+  const agency = await Agency.findOne(
+    { _id: req.user._id },
+    { _id: 0, properties: 1 }
+  );
+  if (!agency) {
+    throw new APIError(`No properties found For The Agency`, 404);
+  }
+  res.json({ propertiesNumber: agency.properties.length, agency: agency });
+});
 module.exports = {
   getAgency,
   updateAgency,
@@ -137,5 +140,5 @@ module.exports = {
   modifyPropertiesToOjectId,
   uploadAgencyImage,
   resizeAgencyImage,
-  getAgencyProperties
+  getAgencyProperties,
 };

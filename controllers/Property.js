@@ -57,7 +57,7 @@ const addProperty = asyncHandler(async (req, res, next) => {
     height: req.body.height,
     details: req.body.details,
     price: req.body.price,
-    isItForRental: req.body.isItRental,
+    isItForRental: req.body.isItForRental,
     realEstateArea: req.body.estateArea,
     propertyNumber: req.body.propertyNumber,
     property_image: req.body.property_image,

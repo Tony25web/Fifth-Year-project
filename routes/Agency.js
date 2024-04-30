@@ -19,8 +19,8 @@ router
   .route("/addProperty")
   .patch(
     auth.verifyJWT,
-    AgencyValidator.AddProperty,
     auth.AuthorizedTo("officeManager"),
+    AgencyValidator.AddProperty,
     addProperty,
   );
 router

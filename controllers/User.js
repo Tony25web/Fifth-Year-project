@@ -50,7 +50,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
   const transformedData = Object.entries(req.body).filter(
     (entry) => !entry.includes("password")
   );
-const updatedData = Object.fromEntries(transformedData)
+  const updatedData = Object.fromEntries(transformedData);
   const user = await User.findOneAndUpdate({ _id: req.user._id }, updatedData, {
     new: true,
   });
